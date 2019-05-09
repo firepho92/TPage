@@ -19,12 +19,13 @@ class Body extends Component {
       data: [],
       fData: [],
       hour: 0,
-      msg: 'Bienvenido, selecciona un momento'
+      msg: 'Bienvenido, selecciona un momento',
+      unformattedData: ''
     }
   }
 
   componentDidMount() {
-    axios.get('http://192.168.0.21:8000/cliente')
+    axios.get('http://192.168.100.4:8000/cliente')
     .then((response) => {
       this.setState({
         data: response.data
@@ -57,9 +58,6 @@ class Body extends Component {
   }
 
   handleClick = () => {
-    console.log(this.state.data)
-    console.log(this.state.date)
-    console.log(this.state.hour)
     let dataset = [];
     if(this.state.date === null) {
       this.setState({
@@ -81,7 +79,14 @@ class Body extends Component {
       });
       return false;
     } else {
-      console.log(dataset);
+      let unformattedData = '';
+      for (var i = 0; i < dataset.length; i++) {
+        unformattedData += dataset[i].temperatura + '\n';
+      }
+      console.log(unformattedData);
+      this.setState({
+        unformattedData: unformattedData
+      })
       this.promediarPorMinuto(dataset);
       this.setState({
         flag: 1
@@ -130,6 +135,12 @@ class Body extends Component {
           {this.state.flag === 0 ? <Welcome msg={this.state.msg}/> : null}
           {this.state.flag === 1 && this.state.fData.length === 0 ? <Loading/> : null }
           {this.state.flag === 1 && this.state.fData.length !== 0 ? <Statistics data={this.state.fData} title={this.state.title}/> : null }
+        </div>
+
+        <div className="main">
+          <textarea name="" id="" cols="30" rows="10" value={this.state.unformattedData} readOnly>
+            
+          </textarea>
         </div>
       </div>
     );
